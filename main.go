@@ -157,21 +157,21 @@
 // 	}
 // }
 
-package main
+// package main
 
-import (
-	"fmt"
-	"time"
-)
+// import (
+// 	"fmt"
+// 	"time"
+// )
 
 // sending
-func processNum(numchan chan int) {
-	for num := range numchan {
+// func processNum(numchan chan int) {
+// 	for num := range numchan {
 
-		fmt.Println("processing number ..", num)
-		time.Sleep(time.Second)
-	}
-}
+// 		fmt.Println("processing number ..", num)
+// 		time.Sleep(time.Second)
+// 	}
+// }
 
 // recieving
 //
@@ -195,64 +195,99 @@ func processNum(numchan chan int) {
 // 	}
 // }
 
+// func main() {
+// 	chan1 := make(chan int)
+// 	chan2 := make(chan string)
+
+// 	go func() {
+// 		chan1 <- 10
+// 	}()
+// 	go func() {
+// 		chan2 <- "pong"
+// 	}()
+
+// 	// combination
+// 	for i := 0; i < 2; i++ {
+// 		select {
+// 		case chan1Value := <-chan1:
+// 			fmt.Println("received data from channnel chan1", chan1Value)
+// 		case chan2Value := <-chan2:
+// 			fmt.Println("received data from channnel chan2", chan2Value)
+// 		}
+// 	}
+
+// 	// emailChan := make(chan string, 100) //buffered channel
+// 	// done := make(chan bool)
+// 	// go emailSender(emailChan, done)
+// 	// for i := 0; i < 5; i++ {
+// 	// 	emailChan <- fmt.Sprintf("%d@gmail.com", i)
+// 	// }
+// 	// close(emailChan)
+// 	// fmt.Println("done sending ")
+// 	// <-done
+
+// 	// emailChan <- "one@example.com"
+// 	// emailChan <- "two@example.com"
+// 	// emailChan <- "three@example.com"
+// 	// fmt.Println("chan data", <-emailChan)
+// 	// fmt.Println("chan data", <-emailChan)
+// 	// fmt.Println("chan data", <-emailChan)
+
+// 	// done := make(chan bool)
+// 	// go task(done)
+// 	// <-done //block jab tak data send nahi hota
+// 	// fmt.Println("end")
+// 	// result := make(chan int)
+// 	// go sum(result, 4, 5)
+// 	// res := <-result
+// 	// fmt.Println(res)
+
+// 	// numchan := make(chan int)
+// 	// go processNum(numchan)
+// 	// for {
+// 	// 	numchan <- rand.Intn(100)
+// 	// }
+// 	// numchan <- 10
+
+// 	// time.Sleep(time.Second)
+
+// 	// messageChan := make(chan string)
+// 	// messageChan <- "Hello word " //blocking
+// 	// msg := <-messageChan
+// 	// fmt.Println(msg)
+// }
+
+// mutex in golang
+package main
+
+import (
+	"fmt"
+	"sync"
+)
+
+type Post struct {
+	views int
+	mx    sync.Mutex
+}
+
+func (P *Post) incViews(wg *sync.WaitGroup) {
+	// lock the mutex
+	// p.mu.Lock()
+	// defer p.mu.Unlock()
+	// p.views++
+	defer wg.Done()
+	P.mx.Lock()
+	P.views++
+	defer P.mx.Unlock()
+
+}
 func main() {
-	chan1 := make(chan int)
-	chan2 := make(chan string)
-
-	go func() {
-		chan1 <- 10
-	}()
-	go func() {
-		chan2 <- "pong"
-	}()
-
-	// combination
-	for i := 0; i < 2; i++ {
-		select {
-		case chan1Value := <-chan1:
-			fmt.Println("received data from channnel chan1", chan1Value)
-		case chan2Value := <-chan2:
-			fmt.Println("received data from channnel chan2", chan2Value)
-		}
+	post := &Post{}
+	var wg sync.WaitGroup
+	for i := 0; i < 357023; i++ {
+		wg.Add(1)
+		go post.incViews(&wg)
 	}
-
-	// emailChan := make(chan string, 100) //buffered channel
-	// done := make(chan bool)
-	// go emailSender(emailChan, done)
-	// for i := 0; i < 5; i++ {
-	// 	emailChan <- fmt.Sprintf("%d@gmail.com", i)
-	// }
-	// close(emailChan)
-	// fmt.Println("done sending ")
-	// <-done
-
-	// emailChan <- "one@example.com"
-	// emailChan <- "two@example.com"
-	// emailChan <- "three@example.com"
-	// fmt.Println("chan data", <-emailChan)
-	// fmt.Println("chan data", <-emailChan)
-	// fmt.Println("chan data", <-emailChan)
-
-	// done := make(chan bool)
-	// go task(done)
-	// <-done //block jab tak data send nahi hota
-	// fmt.Println("end")
-	// result := make(chan int)
-	// go sum(result, 4, 5)
-	// res := <-result
-	// fmt.Println(res)
-
-	// numchan := make(chan int)
-	// go processNum(numchan)
-	// for {
-	// 	numchan <- rand.Intn(100)
-	// }
-	// numchan <- 10
-
-	// time.Sleep(time.Second)
-
-	// messageChan := make(chan string)
-	// messageChan <- "Hello word " //blocking
-	// msg := <-messageChan
-	// fmt.Println(msg)
+	wg.Wait()
+	fmt.Println("Total views: ", post.views)
 }
