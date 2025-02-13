@@ -258,36 +258,151 @@
 // }
 
 // mutex in golang
+// package main
+
+// type Post struct {
+// 	views int
+// 	mx    sync.Mutex
+// }
+
+// func (P *Post) incViews(wg *sync.WaitGroup) {
+// 	// lock the mutex
+// 	// p.mu.Lock()
+// 	// defer p.mu.Unlock()
+// 	// p.views++
+// 	defer wg.Done()
+// 	P.mx.Lock()
+// 	P.views++
+// 	fmt.Println(P.views)
+// 	defer P.mx.Unlock()
+
+// }
+// func main() {
+// 	post := &Post{}
+// 	var wg sync.WaitGroup
+// 	for i := 0; i < 357; i++ {
+// 		wg.Add(1)
+// 		go post.incViews(&wg)
+// 	}
+// 	wg.Wait()
+// 	fmt.Println("Total views: ", post.views)
+// }
+
+// files in golang
+// ________________________________________________
 package main
 
 import (
 	"fmt"
-	"sync"
+	"os"
 )
 
-type Post struct {
-	views int
-	mx    sync.Mutex
-}
+// func main() {
+// 	f, err := os.Open("example.txt")
 
-func (P *Post) incViews(wg *sync.WaitGroup) {
-	// lock the mutex
-	// p.mu.Lock()
-	// defer p.mu.Unlock()
-	// p.views++
-	defer wg.Done()
-	P.mx.Lock()
-	P.views++
-	defer P.mx.Unlock()
+// 	if err != nil {
+// 		panic(err)
+// 	}
 
-}
+// 	fileInfo, err := f.Stat()
+
+// 	if err != nil {
+// 		panic(err)
+// 	}
+
+// 	fmt.Println("file name", fileInfo.Name())
+// 	fmt.Println("file size", fileInfo.Size())
+// 	fmt.Println("last modified time", fileInfo.ModTime())
+// 	fmt.Println("Is folder ?", fileInfo.IsDir())
+// 	fmt.Println("permissions", fileInfo.Mode())
+
+// }
+
+// read file
+// func main() {
+// 	f, err := os.Open("example.txt")
+
+// 	if err != nil {
+// 		panic(err)
+// 	}
+
+// 	fileInfo, err := f.Stat()
+
+// 	if err != nil {
+// 		panic(err)
+// 	}
+
+// 	defer f.Close()
+
+// 	//   creae a buffer
+// 	b := make([]byte, fileInfo.Size())
+// 	d, err := f.Read(b)
+
+// 	if err != nil {
+// 		panic(err)
+// 	}
+
+// 	fmt.Println("value of d and b ", d, "\n", string(b))
+// 	// for i := 0; i < len(b); i++ {
+// 	// 	fmt.Println("data : ", string(b[i]))
+// 	// }
+
+// 	fmt.Println("file read success")
+// }
+
+// method two
+// func main() {
+// 	data, err := os.ReadFile("example.txt")
+// 	if err != nil {
+// 		panic(err)
+// 	}
+// 	fmt.Println(string(data))
+// }
+
+// func main() {
+// 	// create file
+// 	file, err := os.Create("example2.txt")
+// 	if err != nil {
+// 		panic(err)
+// 	}
+// 	defer file.Close()
+// 	//    add data to file
+// 	file.WriteString("Hello from golang land")
+// 	fmt.Println("FILE CREATED SUCCESSFULLY!")
+
+// 	// read file
+// 	f, err := os.Open("example2.txt")
+// 	if err != nil {
+// 		panic(err)
+// 	}
+// 	defer f.Close()
+// 	// extract file info
+// 	fileInfo, err := f.Stat()
+// 	if err != nil {
+// 		panic(err)
+// 	}
+
+// 	// create buffer
+// 	b := make([]byte, fileInfo.Size())
+// 	d, err := f.Read(b)
+// 	fmt.Println("file data--> ", string(b), " <-- size ", d)
+
+// }
+
+// working with folders
 func main() {
-	post := &Post{}
-	var wg sync.WaitGroup
-	for i := 0; i < 357023; i++ {
-		wg.Add(1)
-		go post.incViews(&wg)
+	dir, err := os.Open(".")
+	if err != nil {
+		panic(err)
 	}
-	wg.Wait()
-	fmt.Println("Total views: ", post.views)
+	defer dir.Close()
+	files, err := dir.ReadDir(-1)
+	if err != nil {
+		panic(err)
+	}
+	for _, file := range files {
+		fmt.Println(file.Name())
+		fmt.Println(file.IsDir())
+		fmt.Println("---------------------------------")
+	}
 }
