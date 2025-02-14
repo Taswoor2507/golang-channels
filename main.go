@@ -133,7 +133,9 @@
 // 		ch <- fmt.Sprintf("Error reading body of %s: %v", url, err)
 // 		return
 // 	}
-
+// https://github.com/LeHaGiaBao/Eleven-Golang-Projects/tree/master/Email%20Verifier%20Tool%20With%20Golang
+// https://github.com/kkdai/project52
+// https://github.com/avelino/awesome-go
 // 	// Send response status and first 100 characters of the response body
 // 	ch <- fmt.Sprintf("Fetched %s with status: %s\nResponse Body (First 100 chars): %s\n",
 // 		url, resp.Status, string(body[:10000]))
@@ -390,19 +392,47 @@ import (
 // }
 
 // working with folders
+// func main() {
+// 	dir, err := os.Open(".")
+// 	if err != nil {
+// 		panic(err)
+// 	}
+// 	defer dir.Close()
+// 	files, err := dir.ReadDir(-1)
+// 	if err != nil {
+// 		panic(err)
+// 	}
+// 	for _, file := range files {
+// 		fmt.Println(file.Name())
+// 		fmt.Println(file.IsDir())
+// 		fmt.Println("---------------------------------")
+// 	}
+// }
+
 func main() {
-	dir, err := os.Open(".")
+	file, err := os.Create("example.txt")
+
 	if err != nil {
 		panic(err)
 	}
-	defer dir.Close()
-	files, err := dir.ReadDir(-1)
+
+	defer file.Close()
+	file.WriteString("Hello , world ")
+
+	// read file
+	f, err := os.Open("example.txt")
 	if err != nil {
 		panic(err)
 	}
-	for _, file := range files {
-		fmt.Println(file.Name())
-		fmt.Println(file.IsDir())
-		fmt.Println("---------------------------------")
+	defer f.Close()
+	fileInfo, err := f.Stat()
+	if err != nil {
+		panic(err)
 	}
+
+	//create byte
+	b := make([]byte, fileInfo.Size())
+	d, err := f.Read(b)
+	fmt.Println("file data--> ", string(b), " <-- size ", d)
+
 }
