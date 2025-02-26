@@ -292,12 +292,12 @@
 
 // files in golang
 // ________________________________________________
-package main
+// package main
 
-import (
-	"fmt"
-	"os"
-)
+// import (
+// 	"fmt"
+// 	"os"
+// )
 
 // func main() {
 // 	f, err := os.Open("example.txt")
@@ -409,30 +409,126 @@ import (
 // 	}
 // }
 
+// func main() {
+// 	file, err := os.Create("example.txt")
+
+// 	if err != nil {
+// 		panic(err)
+// 	}
+
+// 	defer file.Close()
+// 	file.WriteString("Hello , world ")
+
+// 	// read file
+// 	f, err := os.Open("example.txt")
+// 	if err != nil {
+// 		panic(err)
+// 	}
+// 	defer f.Close()
+// 	fileInfo, err := f.Stat()
+// 	if err != nil {
+// 		panic(err)
+// 	}
+
+// 	//create byte
+// 	b := make([]byte, fileInfo.Size())
+// 	d, err := f.Read(b)
+// 	fmt.Println("file data--> ", string(b), " <-- size ", d)
+
+// }
+// _________________________________________________________
+
+// package main
+
+// import (
+// 	"fmt"
+// 	"sync"
+// )
+
+// func serveFood(table int, wg *sync.WaitGroup) {
+// 	defer wg.Done()
+// 	fmt.Println("Serving food to table", table)
+// }
+
+//	func main() {
+//		tables := 500
+//		var wg sync.WaitGroup
+//		wg.Add(tables)
+//		for i := 0; i < tables; i++ {
+//			go serveFood(i+1, &wg)
+//		}
+//		wg.Wait()
+//		fmt.Println("All tables are seated.")
+//	}
+package main
+
+import (
+	"fmt"
+	"math/rand"
+	"sync"
+	"time"
+)
+
+type Order struct {
+	ID     int
+	Status string
+}
+
+func generateOrders(count int) []*Order {
+	orders := make([]*Order, count)
+	for i := 0; i < count; i++ {
+		orders[i] = &Order{ID: i + 1, Status: "Pending"}
+	}
+	return orders
+}
+
+//process orders
+
+func processOrders(orders []*Order) {
+	for _, order := range orders {
+		time.Sleep(time.Duration(rand.Intn(500)) * time.Millisecond)
+		fmt.Printf("Processing order %d\n", order.ID)
+	}
+}
+
+// update order statuses
+func updateOrderStatus(orders []*Order) {
+	for _, order := range orders {
+		time.Sleep(time.Duration(rand.Intn(300)) * time.Millisecond)
+		statuses := []string{"Processing", "Shipped", "Delivered"}
+		order.Status = statuses[rand.Intn(3)]
+		fmt.Printf("Updated order %d status to %s \n", order.ID, order.Status)
+	}
+}
+
+// report order status
+func reportOrderStatus(orders []*Order) {
+	for i := 0; i < 5; i++ {
+		time.Sleep((1 * time.Second))
+		fmt.Println("\n ___________________Order Status report _______________")
+		for _, order := range orders {
+			fmt.Printf("Order  %d   %s \n ", order.ID, order.Status)
+		}
+		fmt.Println("\n ________________________________________________")
+	}
+
+}
 func main() {
-	file, err := os.Create("example.txt")
-
-	if err != nil {
-		panic(err)
-	}
-
-	defer file.Close()
-	file.WriteString("Hello , world ")
-
-	// read file
-	f, err := os.Open("example.txt")
-	if err != nil {
-		panic(err)
-	}
-	defer f.Close()
-	fileInfo, err := f.Stat()
-	if err != nil {
-		panic(err)
-	}
-
-	//create byte
-	b := make([]byte, fileInfo.Size())
-	d, err := f.Read(b)
-	fmt.Println("file data--> ", string(b), " <-- size ", d)
-
+	var wg sync.WaitGroup
+	wg.Add(3)
+	orders := generateOrders(1000)
+	go func() {
+		defer wg.Done()
+		processOrders(orders)
+	}()
+	go func() {
+		defer wg.Done()
+		updateOrderStatus(orders)
+	}()
+	go func() {
+		defer wg.Done()
+		reportOrderStatus(orders)
+	}()
+	wg.Wait()
+	fmt.Println("All orders processed successfully existing..........")
 }
